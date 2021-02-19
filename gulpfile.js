@@ -28,6 +28,7 @@ const ttf2eot = require('gulp-ttf2eot');
 const fs = require('fs');
 const ftp = require('vinyl-ftp');
 const favicons = require('gulp-favicons');
+var tinypng = require('gulp-tinypng-compress');
 const {
     strict
 } = require('assert');
@@ -145,6 +146,18 @@ gulp.task('js',
         'dev_js'
     )
 );
+
+gulp.task('tinypng', function() {
+    gulp.src('src/img/**/*.{png,jpg,jpeg}')
+        .pipe(tinypng({
+            key: 'w0n9PwWKqfCQBl1PTbsl7yLv9YVgyrrm',
+            sigFile: 'build/.tinypng-sigs',
+            parallel: true,
+            parallelMax: 50,
+            log: true
+        }))
+        .pipe(gulp.dest('build/img/'));
+});
 
 gulp.task('html', () => {
     return gulp
@@ -276,44 +289,115 @@ gulp.task('font-eot', () => {
         .pipe(gulp.dest('build/fonts/'))
 });
 
+const checkWeight = (fontname) => {
+    let weight = 400;
+    switch (true) {
+        case /Thin/.test(fontname):
+            weight = 100;
+            break;
+        case /ExtraLight/.test(fontname):
+            weight = 200;
+            break;
+        case /Light/.test(fontname):
+            weight = 300;
+            break;
+        case /Regular/.test(fontname):
+            weight = 400;
+            break;
+        case /Medium/.test(fontname):
+            weight = 500;
+            break;
+        case /SemiBold/.test(fontname):
+            weight = 600;
+            break;
+        case /Semi/.test(fontname):
+            weight = 600;
+            break;
+        case /Bold/.test(fontname):
+            weight = 700;
+            break;
+        case /ExtraBold/.test(fontname):
+            weight = 800;
+            break;
+        case /Heavy/.test(fontname):
+            weight = 700;
+            break;
+        case /Black/.test(fontname):
+            weight = 900;
+            break;
+        default:
+            weight = 400;
+    }
+    return weight;
+}
+
 const cb = () => {}
 
-let srcFonts = 'src/scss/_local-fonts.scss';
+let srcFonts = 'src/scss/_fonts.scss';
 let appFonts = 'build/fonts/';
 
-gulp.task('fontsgen', (done) => {
+gulp.task('fontsStyle', (done) => {
     let file_content = fs.readFileSync(srcFonts);
 
     fs.writeFile(srcFonts, '', cb);
-    fs.readdir(appFonts, (err, items) => {
+    fs.readdir(appFonts, function(err, items) {
         if (items) {
             let c_fontname;
-            for (let i = 0; i < items.length; i++) {
-                let fontname = items[i].split('.'),
-                    fontExt;
-                fontExt = fontname[1];
+            for (var i = 0; i < items.length; i++) {
+                let fontname = items[i].split('.');
                 fontname = fontname[0];
+                let font = fontname.split('-')[0];
+                let weight = checkWeight(fontname);
+
                 if (c_fontname != fontname) {
-                    if (fontExt == 'woff' || fontExt == 'woff2' || fontExt == 'eot') {
-                        fs.appendFile(srcFonts, `@include font-face("${fontname}", "${fontname}", 400);\r\n`, cb);
-                        console.log(`Added font ${fontname}.
-----------------------------------------------------------------------------------
-Please, move mixin call from src/scss/_local-fonts.scss to src/scss/_fonts.scss and then change it, if font from this family added ealy!
-----------------------------------------------------------------------------------`);
-                    }
+                    fs.appendFile(srcFonts, '@include font-face("' + font + '", "' + fontname + '", ' + weight + ');\r\n', cb);
                 }
                 c_fontname = fontname;
             }
         }
     })
+
     done();
 })
+
+// const cb = () => {}
+
+// let srcFonts = 'src/scss/_local-fonts.scss';
+// let appFonts = 'build/fonts/';
+
+// gulp.task('fontsgen', (done) => {
+//     let file_content = fs.readFileSync(srcFonts);
+
+//     fs.writeFile(srcFonts, '', cb);
+//     fs.readdir(appFonts, (err, items) => {
+//         if (items) {
+//             let c_fontname;
+//             for (let i = 0; i < items.length; i++) {
+//                 let fontname = items[i].split('.'),
+//                     fontExt;
+//                 fontExt = fontname[1];
+//                 fontname = fontname[0];
+//                 if (c_fontname != fontname) {
+//                     if (fontExt == 'woff' || fontExt == 'woff2' || fontExt == 'eot') {
+//                         fs.appendFile(srcFonts, `@include font-face("${fontname}", "${fontname}", 400);\r\n`, cb);
+//                         console.log(`Added font ${fontname}.
+// ----------------------------------------------------------------------------------
+// Please, move mixin call from src/scss/_local-fonts.scss to src/scss/_fonts.scss and then change it, if font from this family added ealy!
+// ----------------------------------------------------------------------------------`);
+//                     }
+//                 }
+//                 c_fontname = fontname;
+//             }
+//         }
+//     })
+//     done();
+// })
 
 gulp.task('fonts', gulp.series(
     'font-woff2',
     'font-woff',
     'font-eot',
-    'fontsgen'
+    'fontsStyle'
 ));
 
 gulp.task("favicons", () => {
@@ -375,6 +459,7 @@ gulp.task('watch_html', () => {
     gulp.watch('src/img/**/*.*', gulp.parallel('img'));
     gulp.watch('src/svg/css/**/*.svg', gulp.parallel('svg2css'));
     gulp.watch('src/svg/sprite/**/*.svg', gulp.parallel('svg2sprite'));
+    gulp.watch('src/img/**/*.*', gulp.parallel('tinypng'));
     gulp.watch('src/svg/include/**/*.svg', gulp.parallel('html'));
     gulp.watch('src/fonts/**/*.ttf', gulp.parallel('fonts'));
 });
@@ -401,6 +486,7 @@ gulp.task('default',
         'fonts',
         'watch_html',
         'favicons',
+        'tinypng',
         'server_html'
     )
 );
