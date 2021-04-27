@@ -1,65 +1,95 @@
 @mixin bg ($size) {
-	background-size: #{$size};
-	background-position: center center;
-	background-repeat: no-repeat;
+    background-size: #{$size};
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+@mixin imgCenter {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+@mixin tr1 {
+    transition: all .1s linear;
+    -webkit-transition: all .1s linear;
+    -moz-transition: all .1s linear;
+    -ms-transition: all .1s linear;
+    -o-transition: all .1s linear;
+}
+
+@mixin tr2 {
+    transition: all .2s linear;
+    -webkit-transition: all .2s linear;
+    -moz-transition: all .2s linear;
+    -ms-transition: all .2s linear;
+    -o-transition: all .2s linear;
+}
+
+@mixin tr3 {
+    transition: all .3s linear;
+    -webkit-transition: all .3s linear;
+    -moz-transition: all .3s linear;
+    -ms-transition: all .3s linear;
+    -o-transition: all .3s linear;
 }
 
 @mixin centering ($dir) {
-	position: absolute;
-
-	@if $dir==v {
-		top: 50%;
-		transform: translateY(-50%);
-	}
-
-	@else if $dir==h {
-		left: 50%;
-		transform: translateX(-50%);
-	}
-
-	@else {
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-	}
+    position: absolute;
+    @if $dir==v {
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    @else if $dir==h {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    @else {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
 }
 
 @mixin btn_anim($scaleMax:1.05, $scaleMin:0.95) {
-	transform-origin: center center;
-	transition: all ease-out 240ms;
-
-	&:hover {
-		transform: scale($scaleMax);
-	}
-
-	&:focus {
-		transform: scale($scaleMax) trahslateY(-5%);
-	}
-
-	&:active {
-		transform: scale($scaleMin);
-	}
+    transform-origin: center center;
+    transition: all ease-out 240ms;
+    &:hover {
+        transform: scale($scaleMax);
+    }
+    &:focus {
+        transform: scale($scaleMax) trahslateY(-5%);
+    }
+    &:active {
+        transform: scale($scaleMin);
+    }
 }
 
 @mixin font-face($name, $file, $weight: 400, $style: normal) {
-	@font-face {
-		font-family: "#{$name}";
-		src: url('../fonts/#{$file}.eot');
-		src: url('../fonts/#{$file}.eot?#iefix') format('embedded-opentype'),
-		url('../fonts/#{$file}.woff2') format('woff2'),
-		url('../fonts/#{$file}.woff') format('woff');
-		font-weight: $weight;
-		font-style: $style;
-		font-display: swap;
-	}
+    @font-face {
+        font-family: "#{$name}";
+        src: url('../fonts/#{$file}.eot');
+        src: url('../fonts/#{$file}.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/#{$file}.woff2') format('woff2'),
+        url('../fonts/#{$file}.woff') format('woff');
+        font-weight: $weight;
+        font-style: $style;
+        font-display: swap;
+    }
 }
 
 @mixin no-btn {
-	padding: 0;
-	margin: 0;
-	border: 0;
-	background-color: transparent;
-	border-radius: 0;
-	cursor: pointer;
-	-webkit-appearance: none;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    background-color: transparent;
+    border-radius: 0;
+    cursor: pointer;
+    -webkit-appearance: none;
 }
