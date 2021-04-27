@@ -33,6 +33,8 @@ const {
     strict
 } = require('assert');
 
+let folder = require("path").basename(__dirname);
+
 
 let settings_size = {
         'gzip': true,
@@ -50,9 +52,10 @@ let settings_size = {
         ]
     },
     connect = ftp.create({
-        host: '',
-        user: '',
-        pass: '',
+        host: 'alexsuy1.beget.tech',
+        user: 'alexsuy1_sasprojects',
+        password: 'sbOcI%2M',
+        pass: '/sasweb.ru/public_html/test',
         parallel: 10,
         log: ''
     });
@@ -147,7 +150,7 @@ gulp.task('js',
     )
 );
 
-gulp.task('tinypng', function() {
+gulp.task('tinypng', async() => {
     gulp.src('src/img/**/*.{png,jpg,jpeg}')
         .pipe(tinypng({
             key: 'w0n9PwWKqfCQBl1PTbsl7yLv9YVgyrrm',
@@ -448,7 +451,7 @@ gulp.task('deploy', () => {
     return gulp
         .src('build/**/*.*')
         .pipe(connect.newer('html/'))
-        .pipe(connect.dest('html/'))
+        .pipe(connect.dest(folder))
 });
 
 gulp.task('watch_html', () => {
